@@ -26,4 +26,29 @@ class QuizController extends Controller
 
         return redirect()->route('courses.show', $course->id)->with('success', 'Quiz created successfully');
     }
+    public function take($courseId, $quizId)
+{
+    $quiz = Quiz::with('questions')->findOrFail($quizId);
+    return view('student.quizzes.take', compact('quiz'));
+}
+
+public function submit(Request $request, $courseId, $quizId)
+{
+    $quiz = Quiz::with('questions')->findOrFail($quizId);
+
+    $score = 0;
+    foreach ($quiz->questions as $question) {
+        $userAnswer = $request->input('answers.' . $question->id);
+        if ($userAnswer && $userAnswer == $question->correct_option) {
+            $score++;
+        }
+    }
+
+    // Optionally store result in DB
+    // QuizResult::create([...]);
+
+    return redirect()->route('student.my-courses')
+                     ->with('success', 'Quiz submitted! You scored ' . $score . '/' . $quiz->questions->count());
+}
+
 }

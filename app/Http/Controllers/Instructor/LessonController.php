@@ -30,4 +30,11 @@ class LessonController extends Controller
 
         return redirect()->route('courses.show', $module->course_id)->with('success', 'Lesson added successfully');
     }
+    public function show($courseId, $lessonId)
+{
+    $lesson = Lesson::where('course_id', $courseId)->findOrFail($lessonId);
+
+    return view('student.lessons.show', compact('lesson'));
+}
+
 }

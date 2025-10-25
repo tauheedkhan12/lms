@@ -24,10 +24,13 @@ use App\Http\Controllers\Student\StudentCourseController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/dashboard', function () {
-    return view('welcome');
+// Route::get('/', function () {
+//     return view('dashboard');
+// });
+// Root route - redirect to dashboard
+Route::get('/', function () {
+    return redirect()->route('dashboard');
 });
-
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -63,11 +66,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // ================== STUDENT ROUTES ==================
-    Route::middleware('role:student')->prefix('student')->group(function () {
-        Route::get('/my-courses', [StudentCourseController::class, 'index'])->name('student.my-courses');
-        Route::post('/enroll/{course}', [EnrollmentController::class, 'enroll'])->name('student.enroll');
-        Route::get('/courses', [EnrollmentController::class, 'myCourses'])->name('student.courses');
-    });
+    // Route::middleware('role:student')->prefix('student')->group(function () {
+    //     Route::get('/my-courses', [StudentCourseController::class, 'index'])->name('student.my-courses');
+    //     Route::post('/enroll/{course}', [EnrollmentController::class, 'enroll'])->name('student.enroll');
+    //     Route::get('/courses', [EnrollmentController::class, 'myCourses'])->name('student.courses');
+    // });
+    // ================== STUDENT ROUTES ==================
+Route::middleware('role:student')->prefix('student')->group(function () {
+    Route::get('/my-courses', [StudentCourseController::class, 'index'])->name('student.my-courses');
+    Route::post('/enroll/{course}', [EnrollmentController::class, 'enroll'])->name('student.enroll');
+    Route::get('/courses', [EnrollmentController::class, 'myCourses'])->name('student.courses');
+
+    // 🆕 View a specific lesson
+    Route::get('/courses/{course}/lessons/{lesson}', [LessonController::class, 'show'])
+        ->name('student.lessons.show');
+});
+// 🆕 Take quiz & submit
+Route::get('/courses/{course}/quizzes/{quiz}', [QuizController::class, 'take'])
+    ->name('student.quizzes.take');
+Route::post('/courses/{course}/quizzes/{quiz}/submit', [QuizController::class, 'submit'])
+    ->name('student.quizzes.submit');
+
+
 });
 
 
